@@ -17,45 +17,8 @@
 	    <br />
     	<br />
     	<hr />
-    	
-	    <h3 style="text-align: center;">Application</h3>
-		<hr />
-		<h3 style="text-align: center;">:>)</h3>
+    
+		<div style="text-align:center;" ><img src=<c:url value="/static/images/main.jpg" />></div>
     	<hr />
-    	<h3 style="text-align: center;">Technologies utilisées</h3>
-    	<hr />
-		<table class="hover">
-    	<tbody>
-    	   <tr>
-    	   	<th><h4>CLIENT</h4></th>
-    	   	<th>
-    	   		<ul class="no-bullet">
-					<li><h5>WebService pour la mise à jour (probablement ?)</h5></li>
-					<li><h5>Foundation pour le style</h5></li>
-				 </ul>
-    	   	</th>
-    	   </tr>
-    	   <tr>
-    	   	<th><h4>SERVEUR</h4></th>
-    	   	<th>
-    	   		<ul class="no-bullet">
-    	   			<li><h5>Spring comme framework J2EE</h5></li>
-					<li><h5>Websocket pour la mise à jour (probablement ?)</h5></li>
-					<li><h5>Json pour lire les communications</h5></li>
-				 </ul>
-    	   	</th>
-    	   	</tr>
-    		<tr>
-    	   	<th><h4>TESTS</h4></th>
-    	   	<th>
-    	   		<ul class="no-bullet">
-    	   			<li><h5>Junit la base</h5></li>
-					<li><h5>Mockito pour les tests sur servlet</h5></li>
-				 </ul>
-    	   	</th>
-    	   </tr>
-    	</tbody>
-    	</table>	
-	
 	</body>
 </html>
