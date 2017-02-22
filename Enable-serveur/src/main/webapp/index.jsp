@@ -17,7 +17,7 @@
 	<body>
 		<script type="text/javascript">
 		// -------------- Web service afin de recuperer l'etat des doigts
-		var wsUri = "ws://localhost:8080/Enable-serveur/getState";
+		var wsUri = "ws://88.170.244.38/getState";
 		/*
 		function init() {
 		}*/

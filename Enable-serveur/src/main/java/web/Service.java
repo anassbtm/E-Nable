@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 public interface Service 
 {
-	@RequestMapping(value = "/set/{numDoigt}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/set/{numDoigt1}/{numDoigt2}/{numDoigt3}/{numDoigt4}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	public void setInfoDoigt(HttpServletResponse r, @PathVariable("numDoigt") int numDoigt);
-
+	public void setInfoDoigt(HttpServletResponse r, @PathVariable("numDoigt1") boolean numDoigt1, 
+		@PathVariable("numDoigt2") boolean numDoigt2, @PathVariable("numDoigt3") boolean numDoigt3,
+		@PathVariable("numDoigt4") boolean numDoigt4);
+	
 }
