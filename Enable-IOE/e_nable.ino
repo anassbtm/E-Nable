@@ -7,10 +7,12 @@
 #include <Servo.h>
 
 #define SERVO1 5
+#define SERVO4 5
+
 #define IRREMOTE 6
 
 //--- Servo-Moteurs
-Servo monservo1;
+Servo monservo1, monservo4;
 boolean etatServo1, etatServo2, etatServo3, etatServo4;
 
 //--- Parametre IRremote
@@ -22,8 +24,8 @@ decode_results results;
 
 //--- Wifi Shield
 int status = WL_IDLE_STATUS; // Statut du shield
-char ssid[] = "FREEBOX_MOHAMMED_X3";
-char pass[] = "F4CAE55AF478";
+char ssid[] = "iPhone";
+char pass[] = "12345678";
 char server[] = "88.170.244.38";
 WiFiClient client ;
 
@@ -39,11 +41,15 @@ void setup() {
   }
   else {
     Serial.println("WiFi shield connecte");
-  }
+  } 
 
   // Initialisation moteurs
-  monservo1.attach(SERVO1);
-  monservo1.write(0); // servo a 0°
+  //monservo1.attach(SERVO1);
+  //monservo1.write(0); // servo a 0°
+  
+  monservo4.attach(SERVO4);
+  monservo4.write(180); // servo a 0°
+  
   etatServo1 = false ;
   etatServo2 = false ;
   etatServo3 = false ;
@@ -92,17 +98,26 @@ void loop() {
 
     if ( remt_value == 12 ) { // Touche "1" de la télécommande
       if (etatServo1)  {
-        monservo1.write(0);
+        monservo1.write(180);
       }
       else            {
-        monservo1.write(180);
+        monservo1.write(0);
       }
 
       etatServo1 = !etatServo1 ;
 
       //sendRequest(etatServo1, etatServo2, etatServo3, etatServo4);
-     
     }
+    else if ( remt_value == 15 ) {
+      if (!etatServo4)  {
+        monservo4.write(0);
+      }
+      else            {
+        monservo4.write(180);
+      }
+
+      etatServo4 = !etatServo4 ;
+    } 
 
     //while(client.available()) client.flush();
     //client.stop();
@@ -123,10 +138,10 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
   // close any connection before send a new request.
   // This will free the socket on the WiFi shield
   client.stop();
-
+  
   // if there's a successful connection:
   if (client.connect(server, 80)) {
-    char req[20] ;
+    char req[50] ;
     req[0] = 0;
     strcat(req, "PUT /set/");
     strcat(req, boolstring(etatServo1));
@@ -134,10 +149,9 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
     strcat(req, boolstring(etatServo2));
     strcat(req, "/");
     strcat(req, boolstring(etatServo3));
-    strcat(req, "/");
+    strcat(req, "/");;
     strcat(req, boolstring(etatServo4));
     strcat(req, " HTTP/1.1");
-
     
     Serial.println("connecting...");
     // send the HTTP PUT request:
@@ -146,10 +160,11 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
     client.println("User-Agent: ArduinoWiFi/1.1");
     client.println("Connection: close");
     client.println();
-
+    
+    Serial.println(req);
     // note the time that the connection was made:
     lastConnectionTime = millis();
-    } else {
+  } else {
     // if you couldn't make a connection:
     Serial.println("connection failed");
   }
@@ -170,15 +185,12 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
     strcat(req, "/");
     strcat(req, boolstring(etatServo4));
     strcat(req, " HTTP/1.1");
-
     Serial.println("connected");
     Serial.println(req);
-
     client.println(req);
     client.println("Host: 88.170.244.38");
     client.println("Connection: close");
     //client.println("Connection: keep-alive");
-
   //----------------------------
     String content = "Hey, just testing a post request.";
     client.println("POST /try HTTP/1.1");
@@ -193,16 +205,12 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
   else {
   Serial.println("connection failed"); //error message if no client connect
   }
-
   delay(2000);
   //delay(1);
-
   Serial.println("disconnecting.");
   Serial.println("==================");
-
   //client.flush();
   client.stop(); //stop client
-
   }
 */
 int translateIR(long int res_val) {
@@ -338,6 +346,10 @@ void printWifiStatus() {
   Serial.println(" dBm");
 }
 
-const char *boolstring( _Bool b ) {
-  return b ? "true" : "false";
+const char* boolstring( boolean b ) {
+  if (b) {
+   return "true" ;
+  } else { 
+   return "false" ;
+  }
 }
