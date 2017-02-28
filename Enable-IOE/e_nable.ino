@@ -6,7 +6,7 @@
 
 #include <Servo.h>
 
-#define SERVO1 5
+#define SERVO1 8
 #define SERVO4 5
 
 #define IRREMOTE 6
@@ -28,8 +28,9 @@ char ssid[] = "iPhone";
 char pass[] = "12345678";
 char server[] = "88.170.244.38";
 WiFiClient client ;
+boolean connexionReussi = true ;
 
-unsigned long lastConnectionTime = 0;            // last time you connected to the server, in milliseconds
+unsigned long lastConnectionTime = 0;        // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 3000L; //10L * 1000L; // delay between updates, in milliseconds
 
 void setup() {
@@ -44,11 +45,11 @@ void setup() {
   } 
 
   // Initialisation moteurs
-  //monservo1.attach(SERVO1);
-  //monservo1.write(0); // servo a 0°
+  monservo1.attach(SERVO1);
+  monservo1.write(165); // servo au max
   
   monservo4.attach(SERVO4);
-  monservo4.write(180); // servo a 0°
+  monservo4.write(180); // servo au max
   
   etatServo1 = false ;
   etatServo2 = false ;
@@ -58,25 +59,24 @@ void setup() {
   irrecv.enableIRIn();   // Activation d'entrée du signal reçu
 
   // Initialisation Wifi
+  int i = 0 ;
   status = WiFi.begin(ssid, pass);
   while (status != WL_CONNECTED) {
     Serial.print("Tentative de connexion au reseau: ");
     Serial.println(ssid);
-    status = WiFi.begin(ssid);
+    status = WiFi.begin(ssid, pass);
     // wait 10 seconds for connection:
-    delay(10000);
+    i++ ;
+   
+    if ( i == 2 ){ connexionReussi = false ; break ; }
+    else { Serial.print("Essai "); Serial.println(i); delay(5000); }
   }
-  Serial.println("Connecte au wifi");
+  if ( i != 2 )
+    Serial.println("Connecte au wifi");
+  
   printWifiStatus();
   Serial.print("Firmware version: ");
   Serial.println(WiFi.firmwareVersion());
-  /*
-    Serial.print("connection serveur..");
-    while (!client.connect(server, 80)) {
-    Serial.print(".");
-    }
-    Serial.println("reussi !");*/
-  //sendRequest(etatServo1, etatServo2, etatServo3, etatServo4);
 }
 
 
@@ -95,41 +95,37 @@ void loop() {
     irrecv.resume();                 // Réception de la nouvelle valeur
 
     Serial.println(remt_value);
-
+    
     if ( remt_value == 12 ) { // Touche "1" de la télécommande
-      if (etatServo1)  {
-        monservo1.write(180);
-      }
-      else            {
-        monservo1.write(0);
-      }
-
       etatServo1 = !etatServo1 ;
 
-      //sendRequest(etatServo1, etatServo2, etatServo3, etatServo4);
+      if (etatServo1)  {
+        monservo1.write(0);
+      }
+      else            {
+        monservo1.write(165);
+      }
+
     }
-    else if ( remt_value == 15 ) {
-      if (!etatServo4)  {
+    else if ( remt_value == 15 ) { // Touche "4" de la télécommande
+      etatServo4 = !etatServo4 ;
+      
+      if (etatServo4)  {
         monservo4.write(0);
       }
       else            {
         monservo4.write(180);
       }
 
-      etatServo4 = !etatServo4 ;
     } 
 
-    //while(client.available()) client.flush();
-    //client.stop();
-
   }
-  
-  if (millis() - lastConnectionTime > postingInterval) {
-     Serial.print("connected ?? "); Serial.println(client.connected());
 
+  if (millis() - lastConnectionTime > postingInterval && connexionReussi) {
+     Serial.print("connected ?? "); Serial.println(client.connected());
+      
      sendRequest(etatServo1, etatServo2, etatServo3, etatServo4);
   } 
-  //sendRequest(etatServo1, etatServo2, etatServo3, etatServo4);
  
 }
 
@@ -170,49 +166,6 @@ void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boo
   }
 }
 
-/*
-  void sendRequest(boolean etatServo1, boolean etatServo2, boolean etatServo3, boolean etatServo4)
-  {
-  if (client.connect(server, 80)) {  //starts client connection, checks for connection
-    char req[20] ;
-    req[0] = 0;
-    strcat(req, "PUT /set/");
-    strcat(req, boolstring(etatServo1));
-    strcat(req, "/");
-    strcat(req, boolstring(etatServo2));
-    strcat(req, "/");
-    strcat(req, boolstring(etatServo3));
-    strcat(req, "/");
-    strcat(req, boolstring(etatServo4));
-    strcat(req, " HTTP/1.1");
-    Serial.println("connected");
-    Serial.println(req);
-    client.println(req);
-    client.println("Host: 88.170.244.38");
-    client.println("Connection: close");
-    //client.println("Connection: keep-alive");
-  //----------------------------
-    String content = "Hey, just testing a post request.";
-    client.println("POST /try HTTP/1.1");
-    client.println("Host: 88.170.244.38");
-*///client.println("Accept: */*");
-/*
-  client.println("Content-Length: " + content.length());
-  client.println("Content-Type: application/x-www-form-urlencoded");
-  client.println();
-  client.println(content);
-  }
-  else {
-  Serial.println("connection failed"); //error message if no client connect
-  }
-  delay(2000);
-  //delay(1);
-  Serial.println("disconnecting.");
-  Serial.println("==================");
-  //client.flush();
-  client.stop(); //stop client
-  }
-*/
 int translateIR(long int res_val) {
   int out_val;
 
