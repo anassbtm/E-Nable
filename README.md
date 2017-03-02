@@ -5,4 +5,4 @@ Enabling The Future - Développement d'une prothèse Raptor Reloaded
 
 - Importez le serveur à l'adresse Github https://github.com/hichbra/E-Nable
 - Installez les dépendances avec Maven > Update Project 
-- Lancez l'application sur un serveur Tomcat
+- Lancez l'application sur un serveur Tomcat (Pensez à changer l'adresse ip du web service dans /src/main/webapp/index.jsp)
